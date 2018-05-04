@@ -32,9 +32,13 @@ namespace SignalR.Monitor
             }
         }
 
+        /// <summary>
+        /// 监控到数据发生改变
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public static void SignalData_OnChange(object sender, SqlNotificationEventArgs e)
         {
-            // 监控到数据发生改变
             // 调用SignalR进行广播
             Hubs.DataMonitor.MonitorSignalData();
         }
