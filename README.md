@@ -5,7 +5,9 @@
 * SignalR.Notify 消息通知
 * SignalR.Monitor 剥离业务场景，监控数据变化
 * SignalR.MonitorViewTest 监控数据变化的测试页面
+
 ---
+
 # SignalR.IM 即时通讯
 ## 1. 添加NuGet引用
         Install-Package Watson.Base.DotNetCore
@@ -58,7 +60,9 @@ $('#send').click(function () {
     im.server.send($('#username').val(), $('#message').val());
 });
 ```
+
 ---
+
 # SignalR.Notify 消息通知
 ## 1. 添加NuGet引用
         Install-Package Watson.Base.DotNetCore
@@ -112,4 +116,87 @@ $('#send').click(function () {
 ```
 ## 7. 前端和后端调用Hub的区别
 后端待用要使用静态方法，但是前端js调用不能获取静态方法的脚本，所以两种调用方法要区分开。
+
 ---
+
+# SignalR.Monitor 剥离业务场景，监控数据变化
+## 1. 添加NuGet引用
+        Install-Package Watson.Base.DotNetCore
+## 2. 数据库开启代理
+```Sql
+// 设置某个数据库代理的回滚
+ALTER DATABASE [DBName] SET NEW_BROKER WITH ROLLBACK IMMEDIATE;
+// 设置某个数据库的代理
+ALTER DATABASE [DBName] SET ENABLE_BROKER;
+// 查询某个数据库是否已经启动了代理
+// is_broker_enabled 为0表示未启动代理
+// is_broker_enabled 为1表示已启动代理
+SELECT is_broker_enabled FROM sys.databases WHERE name = '[DBName]'
+```
+### 3. MonitorInit
+添加对应表的监控代码
+```CSharp
+// 添加SqlDependency进行数据监控
+var dependency = new SqlDependency(sqlCommand);
+dependency.OnChange += new OnChangeEventHandler(SignalData_OnChange);
+```
+添加数据变化事件
+```CSharp
+/// <summary>
+/// 监控到数据发生改变
+/// </summary>
+public static void SignalData_OnChange(object sender, SqlNotificationEventArgs e)
+{
+    // 调用SignalR进行广播
+    Hubs.DataMonitor.MonitorSignalData();
+}
+```
+### 4. 添加Hubs文件
+```CSharp
+/// <summary>
+/// 方法定义规则
+/// 方法名：Monitor+需要监控的数据库表名
+/// CallBack函数：方法名+CallBack
+/// </summary>
+namespace SignalR.Monitor.Hubs
+{
+    [HubName("dataMonitor")]
+    public class DataMonitor : Hub
+    {
+        private static IHubContext context = GlobalHost.ConnectionManager.GetHubContext<DataMonitor>();
+
+        [HubMethodName("monitorConnection")]
+        public void MonitorConnection()
+        {
+            // 添加对数据表SignalData的监控
+            MonitorInit.SignalData();
+            context.Clients.All.monitorConnectionCallBack("Monitor Connection Success.");
+        }
+        
+        [HubMethodName("monitorSignalData")]
+        public static void MonitorSignalData()
+        {
+            // 对定义了回调函数的应用进行广播
+            context.Clients.All.monitorSignalDataCallBack();
+            // 继续监控
+            MonitorInit.SignalData();
+        }
+    }
+}
+```
+### 5. 应用调用监控的方法
+Global.asax添加对SqlDependency的支持
+```CSharp
+protected void Application_Start()
+{
+    // 启动SqlDependency数据监控
+    SqlDependency.Start(DataAccess.DB.Connect);
+}
+
+protected void Application_End()
+{
+    // 关闭SqlDependency数据监控
+    SqlDependency.Stop(DataAccess.DB.Connect);
+}
+```
+其余Nuget引用、Startup添加、前端js回调函数等应用和前面IM，Notify的一致，这里就不重复了。
