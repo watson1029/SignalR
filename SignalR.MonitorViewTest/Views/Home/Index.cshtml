@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "Monitor Page";
+}
+
+<h2>Monitor</h2>
+
+<div class="container">
+    <table class="table">
+        <tbody id="databody"></tbody>
+    </table>
+</div>
+
+@section scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.3.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+
+    <script>
+        $(function () {
+            // 定义DataMonitor对象
+            var monitor = $.connection.dataMonitor;
+
+            // 连接DataMonitor
+            $.connection.hub.start();
+
+            // 定义DataMonitor.MonitorSignalData的回调函数
+            monitor.client.monitorConnectionCallBack = function (content) {
+                alert(content);
+            }
+
+            // 定义DataMonitor.MonitorSignalData的回调函数
+            monitor.client.monitorSignalDataCallBack = function () {
+                getData();
+            }
+
+            $.connection.hub.start().done(function () {
+                monitor.server.monitorConnection();
+                getData();
+            });
+        });
+
+        function getData() {
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetData",
+                dataType: "json",
+                success: function (data) {
+                    var databody = $("#databody");
+                    databody.empty();
+                    $.each(data, function (i, item) {
+                        databody.append("<tr>" +
+                            "<td>" + item.SignalID + "</td>" +
+                            "<td>" + item.SignalName + "</td>" +
+                            "<td>" + item.SignalContent + "</td>" +
+                            "<td>" + item.SignalMessage + "</td>" +
+                            "<td>" + item.SignalRemark + "</td>" +
+                            "</tr>");
+                    });
+                }
+            });
+        }
+    </script>
+}

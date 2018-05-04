@@ -15,7 +15,7 @@
 *└──────────────────────────────────┘
 */
 using System;
-namespace SignalR.Monitor.Model
+namespace SignalR.MonitorViewTest.Models
 {
 	/// <summary>
 	/// SignalData:实体类(属性说明自动提取数据库字段的描述信息)

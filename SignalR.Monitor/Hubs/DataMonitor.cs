@@ -20,13 +20,17 @@ namespace SignalR.Monitor.Hubs
         [HubMethodName("monitorConnection")]
         public void MonitorConnection()
         {
+            // 添加对数据表SignalData的监控
+            MonitorInit.SignalData();
             context.Clients.All.monitorConnectionCallBack("Monitor Connection Success.");
         }
         
         [HubMethodName("monitorSignalData")]
         public static void MonitorSignalData()
         {
+            // 对定义了回调函数的应用进行广播
             context.Clients.All.monitorSignalDataCallBack();
+            // 继续监控
             MonitorInit.SignalData();
         }
     }
