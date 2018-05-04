@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewBag.Title = "Send";
+}
+
+<h2>SendPage</h2>
+
+<div class="container">
+    <div style="margin-top:20px;">
+        <input type="button" value="发送" id="jsSendFly" />
+        <span>前端js发送FlyPlan通知</span>
+    </div>
+    <div style="margin-top:20px;">
+        <input type="button" value="发送" id="jsSendRepet" />
+        <span>前端js发送RepetPlan通知</span>
+    </div>
+    <div style="margin-top:20px;">
+        <input type="button" value="发送" id="ajaxSendFly" />
+        <span>后台controller发送FlyPlan通知</span>
+    </div>
+    <div style="margin-top:20px;">
+        <input type="button" value="发送" id="ajaxSendRepet" />
+        <span>后台controller发送RepetPlan通知</span>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.3.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+
+    <script>
+        $(function () {
+            // 定义NotifyHub对象
+            var hub = $.connection.notifyHub;
+            
+            // 连接NotifyHub
+            $.connection.hub.start().done();
+
+            //按钮事件
+            $("#jsSendFly").click(function () {
+                hub.server.flyPlanNotifyJs();
+            });
+            $("#jsSendRepet").click(function () {
+                hub.server.repetPlanNotifyJs();
+            });
+            $("#ajaxSendFly").click(function () {
+                $.ajax({
+                    url: "/Home/SendFlyPlan",
+                    type: "post",
+                    async: false,
+                    error: function (xml, msg) {
+                        alert(msg);
+                    },
+                    success: function (data) {
+                    }
+                });
+            });
+            $("#ajaxSendRepet").click(function () {
+                $.ajax({
+                    url: "/Home/SendRepetPlan",
+                    type: "post",
+                    async: false,
+                    error: function (xml, msg) {
+                        alert(msg);
+                    },
+                    success: function (data) {
+                    }
+                });
+            });
+        });
+    </script>
+}

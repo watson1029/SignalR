@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewBag.Title = "RepetPlan";
+}
+
+<h2>RepetPlan</h2>
+
+@section scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.3.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+
+    <script>
+        $(function () {
+            // 定义NotifyHub对象
+            var hub = $.connection.notifyHub;
+
+            // 连接NotifyHub
+            $.connection.hub.start().done();
+
+            // 定义NotifyHub.notify的回调函数
+            hub.client.repetNotify = function (content) {
+                alert(content);
+            }
+        });
+    </script>
+}

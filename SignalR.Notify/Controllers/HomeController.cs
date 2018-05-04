@@ -26,5 +26,32 @@ namespace SignalR.Notify.Controllers
 
             return View();
         }
+
+        public ActionResult Send()
+        {
+            return View();
+        }
+
+        public ActionResult FlyPlan()
+        {
+            return View();
+        }
+
+        public ActionResult RepetPlan()
+        {
+            return View();
+        }
+
+        public bool SendFlyPlan()
+        {
+            Hubs.NotifyHub.FlyPlanNotify();
+            return true;
+        }
+
+        public bool SendRepetPlan()
+        {
+            Hubs.NotifyHub.RepetPlanNotify();
+            return true;
+        }
     }
 }
