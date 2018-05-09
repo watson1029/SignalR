@@ -10,7 +10,7 @@
 
 # SignalR.IM 即时通讯
 ## 1. 添加NuGet引用
-        Install-Package Watson.Base.DotNetCore
+        Install-Package Microsoft.AspNet.SignalR
 ## 2. 添加Startup.cs
 ```CSharp
 [assembly: OwinStartup(typeof(SignalR.Notify.App_Start.Startup))]
@@ -65,7 +65,7 @@ $('#send').click(function () {
 
 # SignalR.Notify 消息通知
 ## 1. 添加NuGet引用
-        Install-Package Watson.Base.DotNetCore
+        Install-Package Microsoft.AspNet.SignalR
 ## 2. 添加Startup.cs
 ```CSharp
 [assembly: OwinStartup(typeof(SignalR.Notify.App_Start.Startup))]
@@ -121,7 +121,7 @@ $('#send').click(function () {
 
 # SignalR.Monitor 剥离业务场景，监控数据变化
 ## 1. 添加NuGet引用
-        Install-Package Watson.Base.DotNetCore
+        Install-Package Microsoft.AspNet.SignalR
 ## 2. 数据库开启代理
 ```Sql
 // 设置某个数据库代理的回滚
